@@ -1,0 +1,79 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-bg-main text-text-primary;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+  }
+}
+
+/* RTL Adjustments */
+[dir="rtl"] {
+  direction: rtl;
+  text-align: right;
+}
+
+[dir="rtl"] input,
+[dir="rtl"] textarea {
+  text-align: right;
+}
+
+[dir="rtl"] .ml-auto {
+  margin-left: 0;
+  margin-right: auto;
+}
+
+[dir="rtl"] .mr-auto {
+  margin-right: 0;
+  margin-left: auto;
+}
+
+/* Inputs & Forms */
+input, textarea, select {
+  border-radius: 8px;
+  border: 2px solid #E5E7EB;
+  transition: all 0.3s ease;
+  background: #FFFFFF;
+  color: #1F2937;
+}
+
+input:focus, textarea:focus, select:focus {
+  border-color: #F4B400;
+  box-shadow: 0 0 0 3px rgba(244, 180, 0, 0.1);
+  outline: none;
+}
+
+/* Scrollbar Styling */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #F5F7FA;
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #F4B400;
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #DAA00F;
+}
+
+@layer components {
+  .card {
+    background: #FFFFFF;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(31, 41, 55, 0.08);
+    border: 1px solid #E5E7EB;
+  }
+  
+  .card:hover {
+    box-shadow: 0 4px 16px rgba(31, 41, 55, 0.12);
+  }
+}
