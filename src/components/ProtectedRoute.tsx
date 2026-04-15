@@ -1,23 +1,35 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import { useRouter } from 'next/navigation'
 
 interface ProtectedRouteProps {
   children: React.ReactNode
-  requiredRoles?: string[]
 }
 
-export function ProtectedRoute({
-  children,
-  requiredRoles = ['admin', 'seller', 'reseller'],
-}: ProtectedRouteProps) {
-  const [loading, setLoading] = useState(false)
-  const [authorized, setAuthorized] = useState(true)
+export function ProtectedRoute({ children }: ProtectedRouteProps) {
+  const [loading, setLoading] = useState(true)
+  const [authorized, setAuthorized] = useState(false)
+  const router = useRouter()
 
   useEffect(() => {
-    setLoading(false)
-    setAuthorized(true)
-  }, [])
+    const checkAuth = async () => {
+      try {
+        const response = await fetch('/api/auth/me')
+        if (response.ok) {
+          setAuthorized(true)
+        } else {
+          router.push('/login')
+        }
+      } catch (error) {
+        router.push('/login')
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    checkAuth()
+  }, [router])
 
   if (loading) {
     return (
@@ -39,28 +51,7 @@ export function ProtectedRoute({
   }
 
   if (!authorized) {
-    return (
-      <div
-        className="flex items-center justify-center h-screen"
-        style={{ backgroundColor: '#F5F7FA' }}
-        dir="rtl"
-      >
-        <div
-          className="text-center p-8 rounded-lg"
-          style={{ backgroundColor: '#FFFFFF', borderColor: '#E5E7EB', border: '1px solid' }}
-        >
-          <h1 className="text-3xl font-bold mb-4" style={{ color: '#1F2937' }}>
-            403
-          </h1>
-          <p className="text-lg mb-2" style={{ color: '#6B7280' }}>
-            غير مصرح بالوصول
-          </p>
-          <p style={{ color: '#6B7280' }}>
-            ليس لديك الصلاحيات المطلوبة للوصول لهذه الصفحة
-          </p>
-        </div>
-      </div>
-    )
+    return null // Will redirect to login
   }
 
   return <>{children}</>
