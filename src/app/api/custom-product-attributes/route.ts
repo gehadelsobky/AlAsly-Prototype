@@ -48,6 +48,8 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'اللون مطلوب' }, { status: 400 })
     }
 
+    console.log('[API] Processing product creation:', { item_code, category })
+
     const query = `
       INSERT INTO custom_product_attributes 
       (item_code, category, description, size, color, image_url, status, created_at, updated_at)
@@ -55,21 +57,41 @@ export async function POST(request: NextRequest) {
       RETURNING *
     `
 
+    // Build parameters array safely
+    const params = []
+    params.push(item_code)
+    params.push(category)
+    params.push(description)
+    params.push(size)
+    params.push(color)
+    params.push(image_url || null)
+    params.push(status || 'active')
+
+    console.log('[API] Query parameters count:', params.length)
+
     const result = await queryPostgres(
       query,
-      [item_code, category, description, size, color, image_url || null, status || 'active']
+      params
     )
 
-    console.log('[API] Product attributes saved successfully:', item_code)
+    if (!result || !Array.isArray(result) || result.length === 0) {
+      console.error('[API] Invalid result from database:', result)
+      throw new Error('فشل في حفظ المنتج - لم يتم تلقي استجابة صحيحة من قاعدة البيانات')
+    }
+
+    const savedData = result[0]
+    console.log('[API] Product attributes saved successfully:', item_code, 'ID:', savedData?.id)
+    
     return NextResponse.json({ 
       success: true, 
-      data: result[0],
+      data: savedData,
       message: 'تم حفظ المنتج بنجاح'
     })
   } catch (error) {
     console.error('[API] Error saving custom product attributes:', error)
+    const errorMessage = error instanceof Error ? error.message : 'خطأ غير معروف'
     return NextResponse.json(
-      { error: 'خطأ في حفظ البيانات: ' + (error instanceof Error ? error.message : 'Unknown error') },
+      { error: 'خطأ في حفظ البيانات: ' + errorMessage },
       { status: 500 }
     )
   }
