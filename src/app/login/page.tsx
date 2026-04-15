@@ -18,64 +18,37 @@ export default function LoginPage() {
     setLoading(true)
 
     try {
-      console.log('[Login Page] Submitting login form for:', email)
+      console.log('[Login Page] Fake login - no credentials required')
       
-      const controller = new AbortController()
-      const timeoutId = setTimeout(() => {
-        console.log('[Login Page] Request timeout triggered')
-        controller.abort()
-      }, 10000) // 10 second timeout
-
-      console.log('[Login Page] Sending fetch request...')
       const response = await fetch('/api/auth/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password, rememberMe }),
-        signal: controller.signal,
+        body: JSON.stringify({ fake: true }),
       })
 
-      clearTimeout(timeoutId)
-      console.log('[Login Page] Response received:', response.status)
-
       if (!response.ok) {
-        console.log('[Login Page] Response not ok, parsing error')
         const data = await response.json()
-        console.error('[Login Page] Error from API:', data)
         setError(data.error || 'حدث خطأ أثناء تسجيل الدخول')
         setLoading(false)
         return
       }
 
-      console.log('[Login Page] Parsing success response')
       const data = await response.json()
-      console.log('[Login Page] Response data:', data)
       
       if (data.success) {
-        console.log('[Login Page] Login successful, storing user data and redirecting...')
+        console.log('[Login Page] Login successful')
         setError(null)
         setLoading(false)
         
-        // Store user data temporarily for the success page
-        if (data.user) {
-          localStorage.setItem('pendingUserData', JSON.stringify(data.user))
-        }
-        
-        // Redirect to success page
-        router.push('/login-success')
+        // Redirect to dashboard
+        router.push('/dashboard')
       } else {
-        console.error('[Login Page] Success flag not set:', data)
         setError(data.error || 'حدث خطأ')
         setLoading(false)
       }
     } catch (err: any) {
-      console.error('[Login Page] Caught error:', err)
-      if (err.name === 'AbortError') {
-        console.error('[Login Page] Request aborted - timeout')
-        setError('انتهت المهلة الزمنية. يرجى المحاولة مجددا')
-      } else {
-        console.error('[Login Page] Network/other error:', err.message)
-        setError('حدث خطأ في الاتصال. يرجى التحقق من الاتصال بالإنترنت')
-      }
+      console.error('[Login Page] Error:', err.message)
+      setError('حدث خطأ في الاتصال')
       setLoading(false)
     }
   }
@@ -143,7 +116,6 @@ export default function LoginPage() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="example@email.com"
-              required
               className="w-full px-4 py-3 rounded-lg border-2 outline-none transition-colors text-sm"
               style={{
                 borderColor: '#E5E7EB',
@@ -177,7 +149,6 @@ export default function LoginPage() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="••••••••"
-              required
               className="w-full px-4 py-3 rounded-lg border-2 outline-none transition-colors text-sm"
               style={{
                 borderColor: '#E5E7EB',
