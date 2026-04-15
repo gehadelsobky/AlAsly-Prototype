@@ -216,30 +216,6 @@ export default function LoginPage() {
             )}
           </button>
         </form>
-
-        {/* Demo Credentials */}
-        <div
-          className="mt-8 p-4 rounded-lg border-2"
-          style={{
-            backgroundColor: '#F5F7FA',
-            borderColor: '#E5E7EB',
-          }}
-        >
-          <p
-            className="text-xs font-bold mb-3"
-            style={{ color: '#6B7280' }}
-          >
-            بيانات تجريبية:
-          </p>
-          <div className="space-y-2 text-xs" style={{ color: '#6B7280' }}>
-            <p>
-              <span className="font-bold">مدير النظام:</span> admin@example.com / admin123
-            </p>
-            <p>
-              <span className="font-bold">البائع:</span> seller@example.com / seller123
-            </p>
-          </div>
-        </div>
       </div>
     </div>
   )
