@@ -1,10 +1,55 @@
 'use client'
 
-import { Search, Bell, MessageSquare, User, LogOut, ChevronDown } from 'lucide-react'
-import { useState } from 'react'
+import { Search, Bell, MessageSquare, User, LogOut, ChevronDown, LogIn } from 'lucide-react'
+import { useState, useEffect, useRef } from 'react'
+import Link from 'next/link'
+import { useRouter } from 'next/navigation'
+import { JWTPayload } from '@/lib/auth'
+import { getCurrentUserAction } from '@/lib/actions'
 
 export function Header() {
   const [showProfile, setShowProfile] = useState(false)
+  const [user, setUser] = useState<JWTPayload | null>(null)
+  const [loading, setLoading] = useState(true)
+  const router = useRouter()
+  const profileRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    async function loadUser() {
+      try {
+        const currentUser = await getCurrentUserAction()
+        setUser(currentUser)
+      } catch (error) {
+        setUser(null)
+      } finally {
+        setLoading(false)
+      }
+    }
+    loadUser()
+  }, [])
+
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (profileRef.current && !profileRef.current.contains(event.target as Node)) {
+        setShowProfile(false)
+      }
+    }
+
+    if (showProfile) {
+      document.addEventListener('mousedown', handleClickOutside)
+      return () => document.removeEventListener('mousedown', handleClickOutside)
+    }
+  }, [showProfile])
+
+  const handleLogout = async () => {
+    try {
+      await fetch('/api/auth/logout', { method: 'POST' })
+      router.push('/login')
+    } catch (error) {
+      console.error('Logout error:', error)
+      router.push('/login')
+    }
+  }
 
   return (
     <header
@@ -38,112 +83,141 @@ export function Header() {
           </div>
         </div>
 
-        {/* Right Section - Icons & Profile */}
+        {/* Right Section - Icons & Profile or Login */}
         <div className="flex items-center gap-4 ml-6">
-          {/* Notifications */}
-          <button
-            className="relative p-2 rounded-lg transition-colors"
-            style={{ color: '#6B7280' }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.backgroundColor = '#F5F7FA'
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.backgroundColor = 'transparent'
-            }}
-          >
-            <Bell className="h-5 w-5" />
-            <span
-              className="absolute top-1 right-1 w-2 h-2 rounded-full"
-              style={{ backgroundColor: '#22C55E' }}
-            ></span>
-          </button>
-
-          {/* Messages */}
-          <button
-            className="relative p-2 rounded-lg transition-colors"
-            style={{ color: '#6B7280' }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.backgroundColor = '#F5F7FA'
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.backgroundColor = 'transparent'
-            }}
-          >
-            <MessageSquare className="h-5 w-5" />
-            <span
-              className="absolute top-1 right-1 w-2 h-2 rounded-full"
-              style={{ backgroundColor: '#22C55E' }}
-            ></span>
-          </button>
-
-          {/* Divider */}
-          <div className="w-px h-6" style={{ backgroundColor: '#E5E7EB' }}></div>
-
-          {/* User Profile */}
-          <div className="relative">
-            <button
-              onClick={() => setShowProfile(!showProfile)}
-              className="flex items-center gap-2 p-2 rounded-lg transition-colors"
-              style={{ color: '#1F2937' }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.backgroundColor = '#F5F7FA'
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.backgroundColor = 'transparent'
-              }}
-            >
-              <img
-                src="https://api.dicebear.com/7.x/avataaars/svg?seed=admin"
-                alt="User"
-                className="w-8 h-8 rounded-full"
-              />
-              <div className="text-right">
-                <p className="text-sm font-bold" style={{ color: '#1F2937' }}>
-                  محمد علي
-                </p>
-                <p className="text-xs" style={{ color: '#6B7280' }}>
-                  مدير النظام
-                </p>
-              </div>
-              <ChevronDown className="h-4 w-4" style={{ color: '#6B7280' }} />
-            </button>
-
-            {/* Profile Dropdown */}
-            {showProfile && (
-              <div
-                className="absolute left-0 mt-2 w-48 rounded-lg shadow-xl border py-2 z-50"
-                style={{ backgroundColor: '#FFFFFF', borderColor: '#E5E7EB' }}
+          {/* Notifications - Only show if logged in */}
+          {user && (
+            <>
+              <button
+                className="relative p-2 rounded-lg transition-colors"
+                style={{ color: '#6B7280' }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.backgroundColor = '#F5F7FA'
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.backgroundColor = 'transparent'
+                }}
               >
-                <button
-                  className="w-full px-4 py-2 text-right text-sm flex items-center justify-end gap-2 transition-colors"
-                  style={{ color: '#1F2937' }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.backgroundColor = '#F5F7FA'
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.backgroundColor = 'transparent'
-                  }}
+                <Bell className="h-5 w-5" />
+                <span
+                  className="absolute top-1 right-1 w-2 h-2 rounded-full"
+                  style={{ backgroundColor: '#22C55E' }}
+                ></span>
+              </button>
+
+              {/* Messages */}
+              <button
+                className="relative p-2 rounded-lg transition-colors"
+                style={{ color: '#6B7280' }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.backgroundColor = '#F5F7FA'
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.backgroundColor = 'transparent'
+                }}
+              >
+                <MessageSquare className="h-5 w-5" />
+                <span
+                  className="absolute top-1 right-1 w-2 h-2 rounded-full"
+                  style={{ backgroundColor: '#22C55E' }}
+                ></span>
+              </button>
+
+              {/* Divider */}
+              <div className="w-px h-6" style={{ backgroundColor: '#E5E7EB' }}></div>
+            </>
+          )}
+
+          {/* Login Button - Show if not logged in */}
+          {!user && !loading && (
+            <Link href="/login">
+              <button
+                className="flex items-center gap-2 px-4 py-2 rounded-lg transition-colors font-medium text-sm"
+                style={{
+                  backgroundColor: '#0B1C2C',
+                  color: '#FFFFFF'
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.backgroundColor = '#12283D'
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.backgroundColor = '#0B1C2C'
+                }}
+              >
+                <LogIn className="h-4 w-4" />
+                <span>تسجيل الدخول</span>
+              </button>
+            </Link>
+          )}
+
+          {/* User Profile - Show if logged in */}
+          {user && (
+            <div ref={profileRef} className="relative">
+              <button
+                onClick={() => setShowProfile(!showProfile)}
+                className="flex items-center gap-2 p-2 rounded-lg transition-colors"
+                style={{ color: '#1F2937' }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.backgroundColor = '#F5F7FA'
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.backgroundColor = 'transparent'
+                }}
+              >
+                <img
+                  src="https://api.dicebear.com/7.x/avataaars/svg?seed=admin"
+                  alt="User"
+                  className="w-8 h-8 rounded-full"
+                />
+                <div className="text-right">
+                  <p className="text-sm font-bold" style={{ color: '#1F2937' }}>
+                    {user?.name || 'User'}
+                  </p>
+                  <p className="text-xs" style={{ color: '#6B7280' }}>
+                    {user?.role === 'admin' ? 'مدير النظام' : user?.role === 'seller' ? 'بائع' : 'موزع'}
+                  </p>
+                </div>
+                <ChevronDown className="h-4 w-4" style={{ color: '#6B7280' }} />
+              </button>
+
+              {/* Profile Dropdown */}
+              {showProfile && (
+                <div
+                  className="absolute left-0 mt-2 w-48 rounded-lg shadow-xl border py-2 z-50"
+                  style={{ backgroundColor: '#FFFFFF', borderColor: '#E5E7EB' }}
                 >
-                  <span>الملف الشخصي</span>
-                  <User className="h-4 w-4" />
-                </button>
-                <hr style={{ borderColor: '#E5E7EB' }} className="my-2" />
-                <button
-                  className="w-full px-4 py-2 text-right text-sm flex items-center justify-end gap-2 transition-colors"
-                  style={{ color: '#22C55E' }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.backgroundColor = '#F0FDF4'
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.backgroundColor = 'transparent'
-                  }}
-                >
-                  <span>تسجيل الخروج</span>
-                  <LogOut className="h-4 w-4" />
-                </button>
-              </div>
-            )}
-          </div>
+                  <button
+                    className="w-full px-4 py-2 text-right text-sm flex items-center justify-end gap-2 transition-colors"
+                    style={{ color: '#1F2937' }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.backgroundColor = '#F5F7FA'
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.backgroundColor = 'transparent'
+                    }}
+                  >
+                    <span>الملف الشخصي</span>
+                    <User className="h-4 w-4" />
+                  </button>
+                  <hr style={{ borderColor: '#E5E7EB' }} className="my-2" />
+                  <button
+                    onClick={handleLogout}
+                    className="w-full px-4 py-2 text-right text-sm flex items-center justify-end gap-2 transition-colors"
+                    style={{ color: '#EF4444' }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.backgroundColor = '#FEE2E2'
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.backgroundColor = 'transparent'
+                    }}
+                  >
+                    <span>تسجيل الخروج</span>
+                    <LogOut className="h-4 w-4" />
+                  </button>
+                </div>
+              )}
+            </div>
+          )}
         </div>
       </div>
     </header>

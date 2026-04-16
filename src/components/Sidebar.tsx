@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import Image from 'next/image'
-import { usePathname } from 'next/navigation'
+import { usePathname, useRouter } from 'next/navigation'
 import { useState, useEffect } from 'react'
 import {
   LayoutDashboard,
@@ -19,6 +19,7 @@ import {
   Shield,
 } from 'lucide-react'
 import { JWTPayload } from '@/lib/auth'
+import { getCurrentUserAction } from '@/lib/actions'
 
 const NAV_ITEMS = [
   {
@@ -119,16 +120,27 @@ function NavLink({
 
 export function Sidebar() {
   const pathname = usePathname()
+  const router = useRouter()
   const [user, setUser] = useState<JWTPayload | null>(null)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    setUser({ userId: '1', email: 'admin@test.com', name: 'Admin', role: 'admin' })
-    setLoading(false)
+    async function loadUser() {
+      const currentUser = await getCurrentUserAction()
+      setUser(currentUser)
+      setLoading(false)
+    }
+    loadUser()
   }, [])
 
   const handleLogout = async () => {
-    // Logout disabled - no authentication needed
+    try {
+      await fetch('/api/auth/logout', { method: 'POST' })
+      router.push('/login')
+    } catch (error) {
+      console.error('Logout error:', error)
+      router.push('/login')
+    }
   }
 
   const filteredNavItems = NAV_ITEMS

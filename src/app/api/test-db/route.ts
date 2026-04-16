@@ -11,13 +11,13 @@ export async function GET() {
     try {
       const result2 = await pool.request().query(`
         SELECT 
-          Item_Name as Inventory_code,
-          Item_Name,
-          Inventory_Name,
-          Retail_Price,
-          Item_Qty
-        FROM dbo.AI_Inventory
-        ORDER BY Item_Name ASC
+          Product_Name as Inventory_code,
+          Product_Name as product_name,
+          Storage_Name as Inventory_Name,
+          Price1 as Retail_Price,
+          Qty as Item_Qty
+        FROM dbo.inventroy_list
+        ORDER BY Product_Name ASC
       `)
       result = result2
     } catch (queryError) {
@@ -25,10 +25,11 @@ export async function GET() {
       // If the above fails, try with just basic columns
       result = await pool.request().query(`
         SELECT 
-          Item_Name as Inventory_code,
-          Inventory_Name
-        FROM dbo.AI_Inventory
-        ORDER BY Item_Name ASC
+          Product_Name as Inventory_code,
+          Product_Name as product_name,
+          Storage_Name as Inventory_Name
+        FROM dbo.inventroy_list
+        ORDER BY Product_Name ASC
       `)
     }
     

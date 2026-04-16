@@ -176,7 +176,7 @@ export function AddProductForm() {
     setSubmitStatus({ type: null, message: '' })
 
     // Prepare custom attributes
-    const item_code = selectedProduct?.value || data.productId
+    const item_code = selectedProduct?.item_name || data.productName || data.productId
     // Get Arabic category labels from the IDs (support multiple)
     const categoryLabels = data.categories.map(categoryId => {
       const categoryObj = CATEGORIES.find(cat => cat.id === categoryId)
@@ -288,7 +288,7 @@ export function AddProductForm() {
               <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
                 {/* Product Search */}
                 <div className="md:col-span-2 space-y-2">
-                  <Label className="font-bold" style={{ color: '#1F2937' }}>كود المنتج *</Label>
+                  <Label className="font-bold" style={{ color: '#1F2937' }}>اسم المنتج *</Label>
                   <Combobox
                     onSelect={handleProductSelect}
                     onSearch={handleSearchInventoryItems}

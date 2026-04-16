@@ -4,22 +4,34 @@ import { createToken } from '@/lib/auth'
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
-    const { fake } = body
+    const { email, password } = body
 
-    console.log('[Login] Fake login request')
+    console.log('[Login] Login attempt for email:', email)
 
-    // Create a fake user token
+    // Validate credentials
+    const ADMIN_EMAIL = 'admin@example.com'
+    const ADMIN_PASSWORD = 'admin123'
+
+    if (email !== ADMIN_EMAIL || password !== ADMIN_PASSWORD) {
+      console.log('[Login] Invalid credentials')
+      return NextResponse.json(
+        { success: false, error: 'بيانات الدخول غير صحيحة' },
+        { status: 401 }
+      )
+    }
+
+    // Create user token
     const token = createToken(
       {
         userId: '1',
-        email: 'demo@example.com',
-        name: 'Demo User',
+        email: 'admin@example.com',
+        name: 'Admin User',
         role: 'admin',
       },
       false
     )
 
-    console.log('[Login] Token created:', token)
+    console.log('[Login] Token created for admin')
 
     // Create response with token
     const response = NextResponse.json(
@@ -29,8 +41,8 @@ export async function POST(request: NextRequest) {
         redirectUrl: '/dashboard',
         user: {
           id: '1',
-          email: 'demo@example.com',
-          name: 'Demo User',
+          email: 'admin@example.com',
+          name: 'Admin User',
           role: 'admin',
         },
       },
@@ -54,7 +66,7 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     console.error('[Login] Error:', error)
     return NextResponse.json(
-      { error: 'حدث خطأ أثناء تسجيل الدخول' },
+      { success: false, error: 'حدث خطأ أثناء تسجيل الدخول' },
       { status: 500 }
     )
   }

@@ -488,20 +488,20 @@ export default function ProductDetailsPage() {
             بيانات المنتج من المخزون
           </h3>
           <p className="text-sm mb-4" style={{ color: '#6B7280' }}>
-            يتم اختيار كود المنتج والسعر والكمية من برنامج المخزون
+            يتم اختيار اسم المنتج والسعر والكمية من برنامج المخزون
           </p>
 
           <div className="grid grid-cols-4 gap-4">
             <div style={{ position: 'relative' }} data-inventory-dropdown>
               <label style={{ color: '#1F2937' }} className="block text-sm font-medium mb-1">
-                كود المنتج *
+                اسم المنتج *
               </label>
               <div style={{ position: 'relative' }}>
                 <Input
                   value={showInventoryDropdown ? inventorySearch : formData.item_code}
                   onChange={(e) => setInventorySearch(e.target.value)}
                   onFocus={() => setShowInventoryDropdown(true)}
-                  placeholder="اختر كود المنتج"
+                  placeholder="اختر اسم المنتج"
                   style={{ borderColor: '#E5E7EB', color: '#1F2937', backgroundColor: '#F5F7FA', pointerEvents: 'auto' }}
                 />
                 <ChevronDown

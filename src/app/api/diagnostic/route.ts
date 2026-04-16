@@ -16,20 +16,20 @@ export async function GET() {
     
     console.log('[Diagnostic] Tables found:', tablesResult.recordset.length)
     
-    // Try to get column information for AI_Inventory
+    // Try to get column information for inventroy_list
     const columnsResult = await pool.request().query(`
       SELECT COLUMN_NAME, DATA_TYPE, IS_NULLABLE
       FROM INFORMATION_SCHEMA.COLUMNS
-      WHERE TABLE_NAME = 'AI_Inventory'
+      WHERE TABLE_NAME = 'inventroy_list'
       ORDER BY ORDINAL_POSITION
     `)
     
-    console.log('[Diagnostic] Columns in AI_Inventory:', columnsResult.recordset.length)
+    console.log('[Diagnostic] Columns in inventroy_list:', columnsResult.recordset.length)
     
-    // Try to count rows in AI_Inventory
+    // Try to count rows in inventroy_list
     let rowCount = 0
     try {
-      const countResult = await pool.request().query('SELECT COUNT(*) as count FROM dbo.AI_Inventory')
+      const countResult = await pool.request().query('SELECT COUNT(*) as count FROM dbo.inventroy_list')
       rowCount = countResult.recordset[0]?.count || 0
     } catch (e) {
       console.error('[Diagnostic] Error counting rows:', e)

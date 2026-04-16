@@ -10,6 +10,7 @@ import { Upload, Loader2, Trash2, ChevronDown } from 'lucide-react'
 interface InventoryItem {
   Inventory_code: string
   Item_Name?: string
+  product_name?: string
   Inventory_Name: string
   Retail_Price?: number
   Item_Qty?: number
@@ -165,13 +166,17 @@ export function AddProductFormNew() {
   const filteredInventory = inventoryItems.filter(item => {
     if (!inventorySearch.trim()) return true
     const search = inventorySearch.toLowerCase().trim()
-    const itemName = (item.Item_Name || '').toLowerCase().trim()
-    return itemName.includes(search)
+    // Treat * as wildcard to show all items
+    if (search === '*') return true
+    const productName = (item.product_name || '').toLowerCase().trim()
+    return productName.includes(search)
   }).sort((a, b) => {
     if (!inventorySearch.trim()) return 0
     const search = inventorySearch.toLowerCase().trim()
-    const nameA = (a.Item_Name || '').toLowerCase().trim()
-    const nameB = (b.Item_Name || '').toLowerCase().trim()
+    // No sorting needed if wildcard
+    if (search === '*') return 0
+    const nameA = (a.product_name || '').toLowerCase().trim()
+    const nameB = (b.product_name || '').toLowerCase().trim()
     
     // Exact match comes first
     if (nameA === search) return -1
@@ -196,7 +201,7 @@ export function AddProductFormNew() {
     
     setFormData(prev => ({
       ...prev,
-      itemCode: item.Item_Name,
+      itemCode: item.product_name || item.Item_Name,
       price: item.Retail_Price || 0,
       quantity: item.Item_Qty || 0,
       manufacturer: item.Inventory_Name || '',
@@ -254,7 +259,7 @@ export function AddProductFormNew() {
     try {
       // Validate required fields
       if (!formData.itemCode.trim()) {
-        throw new Error('كود المنتج مطلوب')
+        throw new Error('اسم المنتج مطلوب')
       }
       if (formData.category.length === 0) {
         throw new Error('يجب اختيار تصنيف واحد على الأقل')
@@ -336,13 +341,13 @@ export function AddProductFormNew() {
           بيانات المنتج من المخزون
         </h3>
         <p className="text-sm mb-4" style={{ color: '#6B7280' }}>
-          يتم اختيار كود المنتج والسعر والكمية من برنامج المخزون
+          يتم اختيار اسم المنتج والسعر والكمية من برنامج المخزون
         </p>
 
         <div className="grid grid-cols-4 gap-4">
           <div style={{ position: 'relative' }} data-inventory-dropdown>
             <label style={{ color: '#1F2937' }} className="block text-sm font-medium mb-1">
-              كود المنتج *
+              اسم المنتج *
             </label>
             <div style={{ position: 'relative' }}>
               <Input
@@ -353,8 +358,8 @@ export function AddProductFormNew() {
                 }}
                 onFocus={() => setShowInventoryDropdown(true)}
                 onBlur={() => setTimeout(() => setShowInventoryDropdown(false), 200)}
-                placeholder="اختر كود المنتج"
-                style={{ borderColor: '#E5E7EB', color: '#1F2937', backgroundColor: '#F5F7FA', pointerEvents: 'auto' }}
+                placeholder="اختر اسم المنتج"
+                style={{ borderColor: '#E5E7EB', color: '#1F2937', backgroundColor: '#F5F7FA', pointerEvents: 'auto', fontWeight: formData.itemCode ? '600' : '400' }}
               />
               <ChevronDown
                 style={{
@@ -414,8 +419,8 @@ export function AddProductFormNew() {
                         onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = '#F9FAFB')}
                         onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = 'transparent')}
                       >
-                        <div style={{ fontWeight: '600' }}>{item.Item_Name}</div>
-                        <div style={{ fontSize: '12px', color: '#9CA3AF', marginTop: '2px' }}>{item.Inventory_code}</div>
+                        <div style={{ fontWeight: '600' }}>{item.product_name || item.Item_Name || 'Unknown'}</div>
+                        <div style={{ fontSize: '12px', color: '#9CA3AF', marginTop: '2px' }}>{item.Inventory_Name}</div>
                       </button>
                     ))
                   )}

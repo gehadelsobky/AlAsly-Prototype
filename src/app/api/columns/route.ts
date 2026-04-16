@@ -5,11 +5,11 @@ export async function GET() {
   try {
     const pool = await getConnection()
     
-    // Get column information for AI_Inventory using proper schema reference
+    // Get column information for inventroy_list using proper schema reference
     const result = await pool.request().query(`
       SELECT COLUMN_NAME, DATA_TYPE
       FROM INFORMATION_SCHEMA.COLUMNS
-      WHERE TABLE_SCHEMA = 'dbo' AND TABLE_NAME = 'AI_Inventory'
+      WHERE TABLE_SCHEMA = 'dbo' AND TABLE_NAME = 'inventroy_list'
       ORDER BY ORDINAL_POSITION
     `)
 

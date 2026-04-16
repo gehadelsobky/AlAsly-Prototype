@@ -33,7 +33,7 @@ export async function POST(request: NextRequest) {
 
     // Validate required fields
     if (!item_code) {
-      return NextResponse.json({ error: 'كود المنتج مطلوب' }, { status: 400 })
+      return NextResponse.json({ error: 'اسم المنتج مطلوب' }, { status: 400 })
     }
     if (!category) {
       return NextResponse.json({ error: 'التصنيف مطلوب' }, { status: 400 })

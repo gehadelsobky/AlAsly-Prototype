@@ -18,34 +18,32 @@ export default function LoginPage() {
     setLoading(true)
 
     try {
-      console.log('[Login Page] Fake login - no credentials required')
-      
+      if (!email || !password) {
+        setError('يرجى إدخال البريد الإلكتروني وكلمة المرور')
+        setLoading(false)
+        return
+      }
+
       const response = await fetch('/api/auth/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ fake: true }),
+        body: JSON.stringify({ email, password }),
       })
 
-      if (!response.ok) {
-        const data = await response.json()
+      const data = await response.json()
+
+      if (!response.ok || !data.success) {
         setError(data.error || 'حدث خطأ أثناء تسجيل الدخول')
         setLoading(false)
         return
       }
 
-      const data = await response.json()
+      console.log('[Login Page] Login successful')
+      setError(null)
+      setLoading(false)
       
-      if (data.success) {
-        console.log('[Login Page] Login successful')
-        setError(null)
-        setLoading(false)
-        
-        // Redirect to dashboard
-        router.push('/dashboard')
-      } else {
-        setError(data.error || 'حدث خطأ')
-        setLoading(false)
-      }
+      // Redirect to dashboard
+      router.push('/dashboard')
     } catch (err: any) {
       console.error('[Login Page] Error:', err.message)
       setError('حدث خطأ في الاتصال')

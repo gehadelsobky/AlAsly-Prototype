@@ -626,7 +626,7 @@ export default function ProductsPage() {
                 {detailsTab === 'basic' && (
                   <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
                     <div>
-                      <p style={{ fontSize: '12px', color: '#6B7280', marginBottom: '4px' }}>كود المنتج</p>
+                      <p style={{ fontSize: '12px', color: '#6B7280', marginBottom: '4px' }}>اسم المنتج</p>
                       <p style={{ fontSize: '14px', fontWeight: '600', color: '#1F2937' }}>{selectedProduct.item_code}</p>
                     </div>
                     <div>

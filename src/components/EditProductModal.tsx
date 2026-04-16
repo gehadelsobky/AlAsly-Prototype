@@ -251,7 +251,7 @@ export function EditProductModal({ product, onClose, onSave }: EditModalProps) {
           <form onSubmit={handleSubmit} className="space-y-4">
             {/* Product Code */}
             <div className="space-y-2">
-              <Label>كود المنتج</Label>
+              <Label>اسم المنتج</Label>
               <Input
                 value={formData.item_code}
                 onChange={e => handleChange('item_code', e.target.value)}

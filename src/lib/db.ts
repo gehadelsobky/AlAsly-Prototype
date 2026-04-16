@@ -2,7 +2,7 @@ import sql from 'mssql'
 
 const config: sql.config = {
   server: '161.97.108.159',
-  database: 'asly2025',
+  database: 'asly2026',
   authentication: {
     type: 'default',
     options: {
@@ -73,12 +73,12 @@ export interface Product {
 }
 
 export async function getProducts(): Promise<Product[]> {
-  return executeQuery<Product>('SELECT * FROM dbo.AI_Inventory')
+  return executeQuery<Product>('SELECT * FROM dbo.inventroy_list')
 }
 
 export async function getProductById(id: number): Promise<Product | null> {
   const results = await executeQuery<Product>(
-    'SELECT * FROM dbo.AI_Inventory WHERE id = @id',
+    'SELECT * FROM dbo.inventroy_list WHERE id = @id',
     { id }
   )
   return results[0] || null
